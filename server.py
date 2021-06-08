@@ -5,7 +5,7 @@ import os
 
 HEADER = 64
 PORT = 12345
-FORMAT = 'ascii'
+FORMAT = 'utf-8'
 
 #SERVER = str(socket.gethostbyname(socket.gethostname()))
 SERVER = '127.0.0.1'
@@ -41,10 +41,23 @@ def files_str(files):
 
 
 
+def send_file(conn,addr,path):
+    f = open(f'server\{path}','r')
+    file = f.read()
+    file_len = str(len(file))
+    file_len += ' '* (HEADER - len(file_len))
+    # sending file length as header
+    conn.send(bytes(file_len,FORMAT))
+    # sending complete file
+    conn.send(bytes(file,FORMAT))
+
+    print(file)
+
+
+
 def connect(conn,addr):
     print(f'connection established with {addr}')
     files = os.listdir('server\\')
-
     #sending header for msg length
     msg = files_str(files)
     msg_len = str(len(msg))
@@ -60,6 +73,7 @@ def connect(conn,addr):
         file_name_len = int(file_name_len)
         filename = conn.recv(file_name_len).decode(FORMAT)
         print('file requested for download',filename)
+        send_file(conn,addr,filename)
 
     
     
