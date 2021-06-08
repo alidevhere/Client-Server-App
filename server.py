@@ -57,17 +57,9 @@ def connect(conn,addr):
     files = os.listdir('server\\')
     #sending header for msg length
     msg = files_str(files)
-    msg_len = str(len(msg))
-    msg_len += ' '* (HEADER - len(files))
-    # sending message length
-    conn.send(bytes(msg_len,FORMAT))
-    # sending real message
-    conn.send(bytes(msg,FORMAT))
-     
-    file_name_len = conn.recv(HEADER).decode(FORMAT)
-    if file_name_len:
-        file_name_len = int(file_name_len)
-        filename = conn.recv(file_name_len).decode(FORMAT)
+    send(msg,conn)
+    filename = recv(conn)
+    if filename:
         send_file(conn,addr,filename)
 
     
