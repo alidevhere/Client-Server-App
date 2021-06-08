@@ -6,8 +6,8 @@ FORMAT = 'utf-8'
 SERVER = '127.0.0.1'
 ADDR = (SERVER,PORT)
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-
-
+client.connect(ADDR)
+print(f'[CONNECTED] : connected to " {SERVER} ".')
 
 def receive_file(client,file_name):
     file_len = client.recv(HEADER).decode(FORMAT)
@@ -20,10 +20,11 @@ def receive_file(client,file_name):
 
 
 
-def connect():
-    client.connect(ADDR)
+def download_files_menu():
+    # files names string header
     msg_len = client.recv(HEADER).decode(FORMAT)
     if msg_len:
+        print('FILE DOWNLOAD MENU\n')
         msg = client.recv(int(msg_len)).decode(FORMAT)
         file_name = input(f'Choose a file to download:\n{msg}')
         file_name_len = str(len(file_name))
@@ -31,31 +32,8 @@ def connect():
         client.send(bytes(file_name_len,FORMAT))
         client.send(bytes(file_name,FORMAT))
         receive_file(client,file_name)
-
+    else:
+        print('[ERROR]: No files found on server.')
         
 
-connect()
-
-'''
-#
-file = s.recv(1024)
-while file:
-    print(file)
-    files = s.recv(1024)
-
-# receiving file data
-f = open('client\data.txt','wb')
-data = s.recv(1024)
-while data:
-    f.write(data)
-    print(data)
-    data = s.recv(1024)
-f.close()
-
-#s.sendall(b'DONE')
-
-s.shutdown(0)
-print('written successfully')
-print('connection closed')    
-s.close()
-'''
+download_files_menu()

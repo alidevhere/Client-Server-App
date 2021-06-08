@@ -20,18 +20,15 @@ def start_server():
     
     while True:
         conn,addr = server.accept()
-        t = threading.Thread(target=connect,args=(conn,addr))
-        t.start()
-        print(f'[CONNECTIONS COUNT]: {threading.activeCount()-1} ')
+        try:
+            t = threading.Thread(target=connect,args=(conn,addr))
+            t.start()
+            print(f'[ CONNECTION ESTABLISHED ]: {addr} connected with server.')
+            print(f'[CONNECTIONS COUNT]: {threading.activeCount()-1} ')
+        except:
+            print('[ EXCEPTION ] : Exception occured while establishing connection.')
 
-
-def files_str_len(files):
-    l=0
-    for f in files:
-        l += len(f)
-    return l
-
-
+#
 def files_str(files):
     s =''
     for f in files:
@@ -42,27 +39,26 @@ def files_str(files):
 
 
 def send_file(conn,addr,path):
+    print(f'[ FILE TRANSFER ] {addr} requested for file "{path}" ')
     f = open(f'server\{path}','r')
     file = f.read()
     file_len = str(len(file))
     file_len += ' '* (HEADER - len(file_len))
+    print('[ STATUS ] : sending file...')
     # sending file length as header
     conn.send(bytes(file_len,FORMAT))
     # sending complete file
     conn.send(bytes(file,FORMAT))
-
-    print(file)
+    print(f'[ COMPLETED ] : file "{path}" sent successfully to {addr}.')
 
 
 
 def connect(conn,addr):
-    print(f'connection established with {addr}')
     files = os.listdir('server\\')
     #sending header for msg length
     msg = files_str(files)
     msg_len = str(len(msg))
     msg_len += ' '* (HEADER - len(files))
-    print('sent msg len ',len(msg_len))
     # sending message length
     conn.send(bytes(msg_len,FORMAT))
     # sending real message
@@ -72,11 +68,25 @@ def connect(conn,addr):
     if file_name_len:
         file_name_len = int(file_name_len)
         filename = conn.recv(file_name_len).decode(FORMAT)
-        print('file requested for download',filename)
         send_file(conn,addr,filename)
 
     
+# for sending messages to clients    
+def send(msg,conn):
+    msg_len = str(len(msg))
+    msg_len += ' '* (HEADER - len(msg))
+    # sending message length
+    conn.send(bytes(msg_len,FORMAT))
+    # sending real message
+    conn.send(bytes(msg,FORMAT))
     
+
+# for receiving messages from clients
+def recv(conn):
+    msg_len = conn.recv(HEADER).decode(FORMAT)
+    if msg_len:
+        msg = conn.recv(int(msg_len)).decode(FORMAT)
+        return msg
 
 
 start_server()
@@ -84,33 +94,3 @@ start_server()
 
 
 
-
-
-'''
-print('START')
-s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.bind(('',12345))
-s.listen(5)
-
-print('listening to clients ...')
-conn,addr = s.accept()
-print('connected to client of address',addr)
-
-
-f = open('server\data.txt','rb')
-
-data = f.read(1024)
-while data:    
-    #print(data)
-    conn.send(data)
-    data = f.read(1024)
-try:
-    s.shutdown(1)
-except OSError:
-    print('connection closed....')
-    s.close()
-print('shut down..........')
-
-#msg = s.recv(1024)
-#print('message from client:',msg)
-'''    
