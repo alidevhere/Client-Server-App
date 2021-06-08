@@ -6,6 +6,8 @@ import os
 HEADER = 64
 PORT = 12345
 FORMAT = 'utf-8'
+DISCONNECT = 'DISCONNECT'
+
 
 #SERVER = str(socket.gethostbyname(socket.gethostname()))
 SERVER = '127.0.0.1'
@@ -21,7 +23,7 @@ def start_server():
     while True:
         conn,addr = server.accept()
         try:
-            t = threading.Thread(target=connect,args=(conn,addr))
+            t = threading.Thread(target=send_file_menu,args=(conn,addr))
             t.start()
             print(f'[ CONNECTION ESTABLISHED ]: {addr} connected with server.')
             print(f'[CONNECTIONS COUNT]: {threading.activeCount()-1} ')
@@ -45,6 +47,9 @@ def send_file(conn,addr,path):
     file_len = str(len(file))
     file_len += ' '* (HEADER - len(file_len))
     print('[ STATUS ] : sending file...')
+    print(file)
+    print('\n',len(file))
+    
     # sending file length as header
     conn.send(bytes(file_len,FORMAT))
     # sending complete file
@@ -53,7 +58,7 @@ def send_file(conn,addr,path):
 
 
 
-def connect(conn,addr):
+def send_file_menu(conn,addr):
     files = os.listdir('server\\')
     #sending header for msg length
     msg = files_str(files)
@@ -61,6 +66,12 @@ def connect(conn,addr):
     filename = recv(conn)
     if filename:
         send_file(conn,addr,filename)
+    msg = recv(conn)
+    if msg ==DISCONNECT:
+        conn.close()
+        print(f'[CLOSED]: Connection with {addr} closed.')
+    print(f'[CONNECTIONS COUNT]: {threading.activeCount()-1} ')
+        
 
     
 # for sending messages to clients    

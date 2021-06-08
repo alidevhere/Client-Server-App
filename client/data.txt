@@ -18,4 +18,4 @@ while True:
             accept_wrapper(key.fileobj)
         else:
             service_connection(key, mask)
-sel.select(timeout=None) blocks until there are sockets ready for I/O. It returns a list of (key, events) tuples, one for each socket. key is a SelectorKey namedtuple that contains a fileobj attribute. key.fileobj is the socket object, and mask is an event mask of the operations that are ready.
+sel.select(timeout=None) blocks until there are sockets ready for I/O. It returns a list of (key, events) tuples, one for each socket. key is a SelectorKey namedtuple that contains a fileobj attribute. key.fileobj is the socket object, and mask is an even
