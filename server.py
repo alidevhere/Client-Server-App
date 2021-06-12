@@ -10,16 +10,20 @@ DISCONNECT = 'DISCONNECT'
 
 
 #SERVER = str(socket.gethostbyname(socket.gethostname()))
-SERVER = '127.0.0.1'
+#SERVER = '127.0.0.1'
+#SERVER = '119.160.97.67'
+SERVER = ''
 ADDR = (SERVER,PORT)
 server= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 print('[SERVER]: Starting Server...')
 server.bind(ADDR)
 
 def start_server():
-    print('waiting for connections..')
+    print('Server address : ',ADDR)
+    print(print(FORMAT))
     server.listen()
     
+    print('waiting for connections..')
     while True:
         conn,addr = server.accept()
         try:
@@ -47,7 +51,7 @@ def send_file(conn,addr,path):
     file_len = str(len(file))
     file_len += ' '* (HEADER - len(file_len))
     print('[ STATUS ] : sending file...')
-    print(file)
+    #print(file)
     print('\n',len(file))
     
     # sending file length as header

@@ -8,8 +8,6 @@ ADDR = (SERVER,PORT)
 DISCONNECT = 'DISCONNECT'
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-client.connect(ADDR)
-print(f'[CONNECTED] : connected to " {SERVER} ".')
 
 def receive_file(client,file_name):
     file_len = client.recv(HEADER).decode(FORMAT)
@@ -25,8 +23,19 @@ def receive_file(client,file_name):
 
 
 
-def download_files_menu():
+def download_files_menu(PORT,SERVER):
     # receiving files names
+    print('PORT No : ',PORT)
+    print('Server IP : ',SERVER)
+    change_values = input('\nChange default values ?? [ y/n ]')
+    if change_values =='y' or change_values =='Y':
+        PORT = input('PORT No : ')
+        SERVER = input('Server IP : ')
+    ADDR = (SERVER,PORT)
+
+    # connecting to server
+    client.connect(ADDR)
+    print(f'[CONNECTED] : connected to " {SERVER} ".')    
     msg = recv()
     file_name = input(f'Choose a file to download:\n{msg}')
     # sending file name for download 
@@ -55,4 +64,4 @@ def recv():
 
 
 
-download_files_menu()
+download_files_menu(PORT,SERVER)
