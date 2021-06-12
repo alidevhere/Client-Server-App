@@ -1,5 +1,5 @@
 # Client-Server-App
- Client Server Application using sockets modeule of python
+ Client Server Application using sockets modeule of python.
 
 # Get Started :
   * Run server.py file
